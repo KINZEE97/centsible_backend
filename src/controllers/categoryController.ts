@@ -1,6 +1,7 @@
 import { Handler } from "express";
 import { CategoryService } from "../service/categoryService";
 import { HttpError } from "../error/HttpError";
+import { categorySchema } from "./schema/category.schema";
 
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
@@ -36,6 +37,34 @@ export class CategoryController {
                 res.status(error.statusCode).json({ message: error.message });
                 return;
             }
+        }
+    };
+
+    update: Handler = async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            if (typeof id !== "string")
+                return res.status(400).json({ message: "Invalid ID" });
+
+            const data = categorySchema.parse(req.body);
+            const result = await this.categoryService.updateCategory(id, data);
+
+            res.status(200).json({ message: "success", result });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    delete: Handler = async (req, res, next) => {
+        const { id } = req.params;
+        if (typeof id !== "string") {
+            return res.status(400).json({ message: "Invalid ID" });
+        }
+        try {
+            const result = await this.categoryService.deleteCategory(id);
+            res.status(200).json({ message: "category deleted", result });
+        } catch (error) {
+            next(error);
         }
     };
 }

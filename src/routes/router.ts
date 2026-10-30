@@ -13,3 +13,5 @@ const categoryController = new CategoryController(categoryService);
 router.post("/category", categoryController.create);
 router.get("/category", categoryController.list);
 router.get("/category/:id", categoryController.listById);
+router.patch("/category/:id", categoryController.update);
+router.delete("/category/:id", categoryController.delete);
