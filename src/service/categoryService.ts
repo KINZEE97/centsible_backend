@@ -8,7 +8,7 @@ export class CategoryService {
         });
 
         if (categoryExists) {
-            return new HttpError(400, "Category name is already in use");
+            throw new HttpError(400, "Category name is already in use");
         }
 
         const category = await db.category.create({
@@ -22,8 +22,20 @@ export class CategoryService {
     async getAllCategories() {
         const allCategories = await db.category.findMany();
 
-        if (!allCategories) return new HttpError(404, "Categories Not found");
+        if (!allCategories) throw new HttpError(404, "Categories Not found");
 
         return allCategories;
+    }
+
+    async getCategoryById(id: string) {
+        const categoryExists = await db.category.findUnique({
+            where: { id },
+        });
+
+        if (!categoryExists) {
+            throw new HttpError(404, "Category not found");
+        }
+
+        return categoryExists;
     }
 }
