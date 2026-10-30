@@ -1,7 +1,14 @@
 import { Router } from "express";
+import { CategoryController } from "../controllers/categoryController";
+import { CategoryService } from "../service/categoryService";
 
 export const router = Router();
 
-router.get("/", (req, res) => {
-    res.send("HELLO WORLD!");
-});
+//services
+const categoryService = new CategoryService();
+//controllers
+const categoryController = new CategoryController(categoryService);
+
+// category routes
+router.post("/category", categoryController.create);
+router.get("/category", categoryController.list);
