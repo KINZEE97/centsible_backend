@@ -17,10 +17,16 @@ enum TransactionType {
   EXPENSE
 }
 
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
 model Category {
   id           String        @id @default(uuid())
   name         String        @unique @db.VarChar(255)
   transactions Transaction[]
+  type         CategoryType  @default(EXPENSE)
 }
 
 model Transaction {
@@ -29,6 +35,6 @@ model Transaction {
   amount         Int
   transacionType TransactionType
   date           DateTime        @db.Date
-  category       Category        @relation(fields: [categoryId], references: [id])
+  category       Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId     String
 }
