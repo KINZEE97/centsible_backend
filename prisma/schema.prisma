@@ -30,11 +30,11 @@ model Category {
 }
 
 model Transaction {
-  id             String          @id @default(uuid())
-  description    String
-  amount         Int
-  transacionType TransactionType
-  date           DateTime        @db.Date
-  category       Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId     String
+  id              String          @id @default(uuid())
+  description     String
+  amount          Int
+  transactionType TransactionType
+  date            DateTime        @db.Date
+  category        Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId      String
 }
