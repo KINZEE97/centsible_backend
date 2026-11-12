@@ -1,9 +1,11 @@
 import {
+    DateQueryType,
     TransactionType,
     UpdateTransactionType,
 } from "../controllers/schema/transaction.schema";
 import { HttpError } from "../error/HttpError";
 import { db } from "../lib/prisma";
+import { getMonthRange } from "../utils/dateRange";
 
 export class TransactionService {
     async createTransaction(data: TransactionType) {
@@ -36,9 +38,35 @@ export class TransactionService {
     }
 
     //implement the pagination and filtering logic in the future
-    async getTransactions() {
-        const transactions = await db.transaction.findMany();
-        return transactions;
+    async getTransactions(data: DateQueryType) {
+        let where = {};
+
+        if (data.month) {
+            const { start, end } = getMonthRange(data.month);
+            where = {
+                date: {
+                    gte: start,
+                    lt: end,
+                },
+            };
+        }
+
+        const count = await db.transaction.count({ where });
+        const transactions = await db.transaction.findMany({
+            where,
+            orderBy: {
+                date: "desc",
+            },
+            skip: (data.page - 1) * data.limit,
+            take: data.limit,
+        });
+
+        return {
+            data: transactions,
+            page: data.page,
+            limit: data.limit,
+            total: count,
+        };
     }
 
     async getTransactionById(id: string) {

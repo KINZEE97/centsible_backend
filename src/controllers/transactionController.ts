@@ -1,5 +1,8 @@
 import { Handler } from "express";
-import { transactionRequestSchema } from "./schema/transaction.schema";
+import {
+    transactionRequestSchema,
+    dateQueryRequestSchema,
+} from "./schema/transaction.schema";
 import { TransactionService } from "../service/transactionService";
 
 export class TransactionController {
@@ -17,9 +20,10 @@ export class TransactionController {
     };
 
     list: Handler = async (req, res, next) => {
+        const date = dateQueryRequestSchema.parse(req.query);
         try {
-            const result = await this.transactionService.getTransactions();
-            res.status(200).json({ data: result });
+            const result = await this.transactionService.getTransactions(date);
+            res.status(200).json(result);
         } catch (error) {
             next(error);
         }
