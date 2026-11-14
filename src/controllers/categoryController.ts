@@ -6,10 +6,11 @@ import { categorySchema } from "./schema/category.schema";
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
     create: Handler = async (req, res) => {
-        const { name } = req.body;
+        const requestData = categorySchema.parse(req.body);
 
         try {
-            const category = await this.categoryService.createCategory(name);
+            const category =
+                await this.categoryService.createCategory(requestData);
             res.status(201).json({ message: "Created", data: category });
         } catch (error) {
             res.status(400).json(error);

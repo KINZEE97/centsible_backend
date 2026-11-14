@@ -3,9 +3,9 @@ import { HttpError } from "../error/HttpError";
 import { db } from "../lib/prisma";
 
 export class CategoryService {
-    async createCategory(name: string) {
+    async createCategory(requestData: CategoryType) {
         const categoryExists = await db.category.findUnique({
-            where: { name },
+            where: { name: requestData.name },
         });
 
         if (categoryExists) {
@@ -13,7 +13,10 @@ export class CategoryService {
         }
 
         const category = await db.category.create({
-            data: { name },
+            data: {
+                name: requestData.name,
+                type: requestData.type,
+            },
         });
 
         return category;
@@ -31,6 +34,9 @@ export class CategoryService {
     async getCategoryById(id: string) {
         const categoryExists = await db.category.findUnique({
             where: { id },
+            include: {
+                transactions: true,
+            },
         });
 
         if (!categoryExists) {
@@ -40,7 +46,7 @@ export class CategoryService {
         return categoryExists;
     }
 
-    async updateCategory(id: string, data: CategoryType) {
+    async updateCategory(id: string, data: Partial<CategoryType>) {
         const category = await db.category.findUnique({
             where: { id },
         });

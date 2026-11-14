@@ -23,6 +23,7 @@ router.delete("/category/:id", categoryController.delete);
 // transaction routes
 router.post("/transaction", transactionController.create);
 router.get("/transaction", transactionController.list);
+router.get("/transaction/summary", transactionController.summary);
 router.get("/transaction/:id", transactionController.getById);
 router.patch("/transaction/:id", transactionController.update);
 router.delete("/transaction/:id", transactionController.delete);

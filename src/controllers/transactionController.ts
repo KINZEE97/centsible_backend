@@ -74,4 +74,21 @@ export class TransactionController {
             next(error);
         }
     };
+
+    summary: Handler = async (req, res, next) => {
+        const query = dateQueryRequestSchema.parse(req.query);
+        if (!query.month || typeof query.month !== "string") {
+            return res.status(400).json({ error: "invalid month" });
+        }
+
+        try {
+            const result = await this.transactionService.getSummary(
+                query.month,
+            );
+
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    };
 }

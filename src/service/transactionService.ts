@@ -115,4 +115,32 @@ export class TransactionService {
 
         return { message: "transaction deleted successfully" };
     }
+
+    async getSummary(month: string) {
+        const { start, end } = getMonthRange(month);
+        const summary = await db.transaction.groupBy({
+            by: ["transactionType"],
+            where: {
+                date: {
+                    gte: start,
+                    lt: end,
+                },
+            },
+            _sum: { amount: true },
+        });
+
+        const income =
+            summary.find((item) => item.transactionType === "INCOME")?._sum
+                .amount || 0;
+        const expense =
+            summary.find((item) => item.transactionType === "EXPENSE")?._sum
+                .amount || 0;
+
+        return {
+            monthSelected: month,
+            income,
+            expense,
+            total: income - expense,
+        };
+    }
 }
