@@ -1,7 +1,10 @@
 import { Handler } from "express";
 import { CategoryService } from "../service/categoryService";
 import { HttpError } from "../error/HttpError";
-import { categorySchema } from "./schema/category.schema";
+import {
+    categorySchema,
+    paginationQuerySchema,
+} from "./schema/category.schema";
 
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
@@ -18,8 +21,10 @@ export class CategoryController {
     };
 
     list: Handler = async (req, res) => {
+        const query = paginationQuerySchema.parse(req.query);
         try {
-            const categories = await this.categoryService.getAllCategories();
+            const categories =
+                await this.categoryService.getAllCategories(query);
             res.status(200).json(categories);
         } catch (error) {
             res.status(400).json(error);

@@ -118,29 +118,35 @@ export class TransactionService {
 
     async getSummary(month: string) {
         const { start, end } = getMonthRange(month);
-        const summary = await db.transaction.groupBy({
-            by: ["transactionType"],
+        const grouped = await db.transaction.groupBy({
+            by: ["categoryId"],
             where: {
+                transactionType: "EXPENSE",
                 date: {
                     gte: start,
                     lt: end,
                 },
             },
             _sum: { amount: true },
+            orderBy: { _sum: { amount: "desc" } },
         });
 
-        const income =
-            summary.find((item) => item.transactionType === "INCOME")?._sum
-                .amount || 0;
-        const expense =
-            summary.find((item) => item.transactionType === "EXPENSE")?._sum
-                .amount || 0;
+        const categoryIds = grouped.map((item) => item.categoryId);
+        const categories = await db.category.findMany({
+            where: { id: { in: categoryIds } },
+        });
 
+        const result = grouped.map((item) => {
+            const category = categories.find((c) => c.id === item.categoryId);
+            return {
+                categoryId: item.categoryId,
+                categoryName: category?.name || "Unknown",
+                total: item._sum.amount || 0,
+            };
+        });
         return {
             monthSelected: month,
-            income,
-            expense,
-            total: income - expense,
+            categories: result,
         };
     }
 }

@@ -7,4 +7,10 @@ export const categorySchema = z
     })
     .strict();
 
+export const paginationQuerySchema = z.object({
+    page: z.number().int().positive().optional().default(1),
+    limit: z.number().int().nonnegative().optional().default(10),
+});
+
 export type CategoryType = z.infer<typeof categorySchema>;
+export type PaginationQueryType = z.infer<typeof paginationQuerySchema>;

@@ -1,4 +1,7 @@
-import { CategoryType } from "../controllers/schema/category.schema";
+import {
+    CategoryType,
+    PaginationQueryType,
+} from "../controllers/schema/category.schema";
 import { HttpError } from "../error/HttpError";
 import { db } from "../lib/prisma";
 
@@ -23,12 +26,23 @@ export class CategoryService {
     }
 
     //Futuramente vamos implementar pagination.
-    async getAllCategories() {
-        const allCategories = await db.category.findMany();
+    async getAllCategories(query: PaginationQueryType) {
+        const allCategories = await db.category.findMany({
+            orderBy: { name: "asc" },
+            skip: (query.page - 1) * query.limit,
+            take: query.limit,
+        });
 
         if (!allCategories) throw new HttpError(404, "Categories Not found");
 
-        return allCategories;
+        const count = await db.category.count();
+
+        return {
+            data: allCategories,
+            page: query.page,
+            limit: query.limit,
+            total: count,
+        };
     }
 
     async getCategoryById(id: string) {
