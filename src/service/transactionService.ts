@@ -121,7 +121,6 @@ export class TransactionService {
         const grouped = await db.transaction.groupBy({
             by: ["categoryId"],
             where: {
-                transactionType: "EXPENSE",
                 date: {
                     gte: start,
                     lt: end,

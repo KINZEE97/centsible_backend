@@ -22,11 +22,26 @@ enum CategoryType {
   EXPENSE
 }
 
+model User {
+  id           String @id @default(uuid())
+  name         String @db.VarChar(255)
+  email        String @unique @db.VarChar(255)
+  passwordHash String @db.VarChar(255)
+
+  createdAt    DateTime      @default(now())
+  categories   Category[]
+  transactions Transaction[]
+}
+
 model Category {
   id           String        @id @default(uuid())
-  name         String        @unique @db.VarChar(255)
+  name         String        @db.VarChar(255)
   transactions Transaction[]
   type         CategoryType  @default(EXPENSE)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+
+  @@unique([name, userId])
 }
 
 model Transaction {
@@ -37,4 +52,8 @@ model Transaction {
   date            DateTime        @db.Date
   category        Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId      String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+
+  @@index([userId, date])
 }

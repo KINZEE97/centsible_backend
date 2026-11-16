@@ -7,14 +7,6 @@ import { db } from "../lib/prisma";
 
 export class CategoryService {
     async createCategory(requestData: CategoryType) {
-        const categoryExists = await db.category.findUnique({
-            where: { name: requestData.name },
-        });
-
-        if (categoryExists) {
-            throw new HttpError(400, "Category name is already in use");
-        }
-
         const category = await db.category.create({
             data: {
                 name: requestData.name,
