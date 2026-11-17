@@ -33,4 +33,5 @@ router.patch("/transaction/:id", transactionController.update);
 router.delete("/transaction/:id", transactionController.delete);
 
 // user routes
-router.post("/user", userController.create);
+router.post("/register", userController.register);
+router.post("/login", userController.login);
