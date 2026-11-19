@@ -5,6 +5,7 @@ import { CategoryService } from "../service/categoryService";
 import { TransactionService } from "../service/transactionService";
 import { UserService } from "../service/userService";
 import { UserController } from "../controllers/userController";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 export const router = Router();
 
@@ -19,7 +20,7 @@ const userController = new UserController(userService);
 
 // category routes
 router.post("/category", categoryController.create);
-router.get("/category", categoryController.list);
+router.get("/category", authMiddleware, categoryController.list);
 router.get("/category/:id", categoryController.listById);
 router.patch("/category/:id", categoryController.update);
 router.delete("/category/:id", categoryController.delete);

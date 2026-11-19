@@ -10,10 +10,13 @@ export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
     create: Handler = async (req, res) => {
         const requestData = categorySchema.parse(req.body);
+        const user = req.user;
 
         try {
-            const category =
-                await this.categoryService.createCategory(requestData);
+            const category = await this.categoryService.createCategory(
+                requestData,
+                user,
+            );
             res.status(201).json({ message: "Created", data: category });
         } catch (error) {
             res.status(400).json(error);
