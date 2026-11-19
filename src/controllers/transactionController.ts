@@ -4,14 +4,20 @@ import {
     dateQueryRequestSchema,
 } from "./schema/transaction.schema";
 import { TransactionService } from "../service/transactionService";
+import { HttpError } from "../error/HttpError";
 
 export class TransactionController {
     constructor(private readonly transactionService: TransactionService) {}
     create: Handler = async (req, res, next) => {
         const data = transactionRequestSchema.parse(req.body);
+        const user = req.user;
+
+        if (!user) throw new HttpError(401, "Unauthorized");
         try {
-            const result =
-                await this.transactionService.createTransaction(data);
+            const result = await this.transactionService.createTransaction(
+                data,
+                user,
+            );
 
             res.status(201).json({ success: "Created", data: result });
         } catch (error) {

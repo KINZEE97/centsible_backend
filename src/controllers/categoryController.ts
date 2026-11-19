@@ -12,6 +12,8 @@ export class CategoryController {
         const requestData = categorySchema.parse(req.body);
         const user = req.user;
 
+        if (!user) throw new HttpError(401, "Unauthorized");
+
         try {
             const category = await this.categoryService.createCategory(
                 requestData,

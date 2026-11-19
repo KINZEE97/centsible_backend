@@ -19,19 +19,23 @@ const transactionController = new TransactionController(transactionService);
 const userController = new UserController(userService);
 
 // category routes
-router.post("/category", categoryController.create);
+router.post("/category", authMiddleware, categoryController.create);
 router.get("/category", authMiddleware, categoryController.list);
-router.get("/category/:id", categoryController.listById);
-router.patch("/category/:id", categoryController.update);
-router.delete("/category/:id", categoryController.delete);
+router.get("/category/:id", authMiddleware, categoryController.listById);
+router.patch("/category/:id", authMiddleware, categoryController.update);
+router.delete("/category/:id", authMiddleware, categoryController.delete);
 
 // transaction routes
-router.post("/transaction", transactionController.create);
-router.get("/transaction", transactionController.list);
-router.get("/transaction/summary", transactionController.summary);
-router.get("/transaction/:id", transactionController.getById);
-router.patch("/transaction/:id", transactionController.update);
-router.delete("/transaction/:id", transactionController.delete);
+router.post("/transaction", authMiddleware, transactionController.create);
+router.get("/transaction", authMiddleware, transactionController.list);
+router.get(
+    "/transaction/summary",
+    authMiddleware,
+    transactionController.summary,
+);
+router.get("/transaction/:id", authMiddleware, transactionController.getById);
+router.patch("/transaction/:id", authMiddleware, transactionController.update);
+router.delete("/transaction/:id", authMiddleware, transactionController.delete);
 
 // user routes
 router.post("/register", userController.register);

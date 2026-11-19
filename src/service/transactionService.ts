@@ -6,9 +6,10 @@ import {
 import { HttpError } from "../error/HttpError";
 import { db } from "../lib/prisma";
 import { getMonthRange } from "../utils/dateRange";
+import { IUser } from "./categoryService";
 
 export class TransactionService {
-    async createTransaction(data: TransactionType) {
+    async createTransaction(data: TransactionType, user: IUser) {
         const categoryExists = await db.category.findUnique({
             where: { id: data.categoryId },
         });
@@ -24,6 +25,12 @@ export class TransactionService {
             );
         }
 
+        const userExists = await db.user.findUnique({
+            where: { id: user.id },
+        });
+
+        if (!userExists) throw new HttpError(401, "Unuthorized");
+
         const transaction = await db.transaction.create({
             data: {
                 description: data.description,
@@ -31,6 +38,7 @@ export class TransactionService {
                 transactionType: data.transactionType,
                 date: data.date,
                 categoryId: data.categoryId,
+                userId: user.id,
             },
         });
 
