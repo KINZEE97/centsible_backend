@@ -5,8 +5,14 @@ import {
 import { HttpError } from "../error/HttpError";
 import { db } from "../lib/prisma";
 
+interface IUser {
+    id: string;
+    name: string;
+    email: string;
+}
+
 export class CategoryService {
-    async createCategory(requestData: CategoryType) {
+    async createCategory(requestData: CategoryType, user: IUser) {
         const category = await db.category.create({
             data: {
                 name: requestData.name,
