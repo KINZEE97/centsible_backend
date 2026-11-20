@@ -13,11 +13,6 @@ export interface IUser {
 
 export class CategoryService {
     async createCategory(requestData: CategoryType, user: IUser) {
-        const userExists = await db.user.findUnique({
-            where: { id: user.id },
-        });
-
-        if (!userExists) throw new HttpError(401, "Unauthorized");
         const category = await db.category.create({
             data: {
                 name: requestData.name,
