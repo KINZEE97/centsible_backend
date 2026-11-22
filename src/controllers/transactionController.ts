@@ -3,9 +3,9 @@ import {
     transactionRequestSchema,
     dateQueryRequestSchema,
     updateTransactionRequestSchema,
-} from "./schema/transaction.schema";
-import { TransactionService } from "../service/transactionService";
-import { HttpError } from "../error/HttpError";
+} from "./schema/transaction.schema.js";
+import { TransactionService } from "../service/transactionService.js";
+import { HttpError } from "../error/HttpError.js";
 
 export class TransactionController {
     constructor(private readonly transactionService: TransactionService) {}

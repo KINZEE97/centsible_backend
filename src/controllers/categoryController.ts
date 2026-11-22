@@ -1,10 +1,10 @@
 import { Handler } from "express";
-import { CategoryService } from "../service/categoryService";
-import { HttpError } from "../error/HttpError";
+import { CategoryService } from "../service/categoryService.js";
+import { HttpError } from "../error/HttpError.js";
 import {
     categorySchema,
     paginationQuerySchema,
-} from "./schema/category.schema";
+} from "./schema/category.schema.js";
 
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}

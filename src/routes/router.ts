@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { CategoryController } from "../controllers/categoryController";
-import { TransactionController } from "../controllers/transactionController";
-import { CategoryService } from "../service/categoryService";
-import { TransactionService } from "../service/transactionService";
-import { UserService } from "../service/userService";
-import { UserController } from "../controllers/userController";
-import { authMiddleware } from "../middleware/authMiddleware";
+import { CategoryController } from "../controllers/categoryController.js";
+import { TransactionController } from "../controllers/transactionController.js";
+import { CategoryService } from "../service/categoryService.js";
+import { TransactionService } from "../service/transactionService.js";
+import { UserService } from "../service/userService.js";
+import { UserController } from "../controllers/userController.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { limiter } from "../middleware/limiter.js";
 
 export const router = Router();
 
@@ -39,4 +40,4 @@ router.delete("/transaction/:id", authMiddleware, transactionController.delete);
 
 // user routes
 router.post("/register", userController.register);
-router.post("/login", userController.login);
+router.post("/login", limiter, userController.login);

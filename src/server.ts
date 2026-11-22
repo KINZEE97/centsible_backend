@@ -1,8 +1,8 @@
 import cors from "cors";
 import express from "express";
 import "dotenv/config";
-import { router } from "./routes/router";
-import { errorHandler } from "./middleware/errorHandler";
+import { router } from "./routes/router.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 const port = process.env.PORT || 3333;

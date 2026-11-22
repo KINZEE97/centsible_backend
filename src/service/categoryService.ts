@@ -1,9 +1,9 @@
 import {
     CategoryType,
     PaginationQueryType,
-} from "../controllers/schema/category.schema";
-import { HttpError } from "../error/HttpError";
-import { db } from "../lib/prisma";
+} from "../controllers/schema/category.schema.js";
+import { HttpError } from "../error/HttpError.js";
+import { db } from "../lib/prisma.js";
 
 export interface IUser {
     id: string;
