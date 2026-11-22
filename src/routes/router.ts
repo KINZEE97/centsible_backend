@@ -20,16 +20,16 @@ const userController = new UserController(userService);
 
 // category routes
 router.post("/category", authMiddleware, categoryController.create);
-router.get("/category", authMiddleware, categoryController.list);
+router.get("/categories", authMiddleware, categoryController.list);
 router.get("/category/:id", authMiddleware, categoryController.listById);
 router.patch("/category/:id", authMiddleware, categoryController.update);
 router.delete("/category/:id", authMiddleware, categoryController.delete);
 
 // transaction routes
 router.post("/transaction", authMiddleware, transactionController.create);
-router.get("/transaction", authMiddleware, transactionController.list);
+router.get("/transactions", authMiddleware, transactionController.list);
 router.get(
-    "/transaction/summary",
+    "/transactions/summary",
     authMiddleware,
     transactionController.summary,
 );

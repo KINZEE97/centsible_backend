@@ -8,7 +8,7 @@ import {
 
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
-    create: Handler = async (req, res) => {
+    create: Handler = async (req, res, next) => {
         const requestData = categorySchema.parse(req.body);
         const user = req.user;
 
@@ -21,44 +21,51 @@ export class CategoryController {
             );
             res.status(201).json({ message: "Created", data: category });
         } catch (error) {
-            res.status(400).json(error);
+            next(error);
         }
     };
 
-    list: Handler = async (req, res) => {
+    list: Handler = async (req, res, next) => {
         const query = paginationQuerySchema.parse(req.query);
+        const user = req.user;
         try {
-            const categories =
-                await this.categoryService.getAllCategories(query);
+            if (!user) throw new HttpError(401, "Unauthorized");
+            const categories = await this.categoryService.getAllCategories(
+                query,
+                user,
+            );
             res.status(200).json(categories);
         } catch (error) {
-            res.status(400).json(error);
+            next(error);
         }
     };
 
-    listById: Handler = async (req, res) => {
+    listById: Handler = async (req, res, next) => {
         const { id } = req.params;
-        if (typeof id !== "string")
+        const user = req.user;
+        if (typeof id !== "string" || !user)
             return res.status(400).json({ message: "Invalid ID" });
         try {
-            const result = await this.categoryService.getCategoryById(id);
+            const result = await this.categoryService.getCategoryById(id, user);
             res.status(200).json({ data: result });
         } catch (error) {
-            if (error instanceof HttpError) {
-                res.status(error.statusCode).json({ message: error.message });
-                return;
-            }
+            next(error);
         }
     };
 
     update: Handler = async (req, res, next) => {
         try {
             const { id } = req.params;
-            if (typeof id !== "string")
+            const user = req.user;
+            if (typeof id !== "string" || !user)
                 return res.status(400).json({ message: "Invalid ID" });
 
             const data = categorySchema.parse(req.body);
-            const result = await this.categoryService.updateCategory(id, data);
+            const result = await this.categoryService.updateCategory(
+                id,
+                data,
+                user,
+            );
 
             res.status(200).json({ message: "success", result });
         } catch (error) {
@@ -68,11 +75,12 @@ export class CategoryController {
 
     delete: Handler = async (req, res, next) => {
         const { id } = req.params;
-        if (typeof id !== "string") {
+        const user = req.user;
+        if (typeof id !== "string" || !user) {
             return res.status(400).json({ message: "Invalid ID" });
         }
         try {
-            const result = await this.categoryService.deleteCategory(id);
+            const result = await this.categoryService.deleteCategory(id, user);
             res.status(200).json({ message: "category deleted", result });
         } catch (error) {
             next(error);

@@ -24,17 +24,20 @@ export class CategoryService {
         return category;
     }
 
-    //Futuramente vamos implementar pagination.
-    async getAllCategories(query: PaginationQueryType) {
+    async getAllCategories(query: PaginationQueryType, user: IUser) {
         const allCategories = await db.category.findMany({
+            where: { userId: user.id },
             orderBy: { name: "asc" },
             skip: (query.page - 1) * query.limit,
             take: query.limit,
+            omit: { userId: true },
         });
 
         if (!allCategories) throw new HttpError(404, "Categories Not found");
 
-        const count = await db.category.count();
+        const count = await db.category.count({
+            where: { userId: user.id },
+        });
 
         return {
             data: allCategories,
@@ -44,9 +47,9 @@ export class CategoryService {
         };
     }
 
-    async getCategoryById(id: string) {
+    async getCategoryById(id: string, user: IUser) {
         const categoryExists = await db.category.findUnique({
-            where: { id },
+            where: { id, userId: user.id },
             include: {
                 transactions: true,
             },
@@ -59,9 +62,9 @@ export class CategoryService {
         return categoryExists;
     }
 
-    async updateCategory(id: string, data: Partial<CategoryType>) {
+    async updateCategory(id: string, data: Partial<CategoryType>, user: IUser) {
         const category = await db.category.findUnique({
-            where: { id },
+            where: { id, userId: user.id },
         });
 
         if (!category) {
@@ -72,15 +75,16 @@ export class CategoryService {
             where: { id },
             data: {
                 name: data.name,
+                type: data.type,
             },
         });
 
         return updatedCategory;
     }
 
-    async deleteCategory(id: string) {
+    async deleteCategory(id: string, user: IUser) {
         const categoryExists = await db.category.findUnique({
-            where: { id },
+            where: { id, userId: user.id },
         });
 
         if (!categoryExists) {
@@ -88,7 +92,7 @@ export class CategoryService {
         }
 
         const deletedCategory = await db.category.delete({
-            where: { id },
+            where: { id, userId: user.id },
         });
 
         return deletedCategory;
