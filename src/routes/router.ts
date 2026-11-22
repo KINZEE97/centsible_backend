@@ -6,6 +6,7 @@ import { TransactionService } from "../service/transactionService";
 import { UserService } from "../service/userService";
 import { UserController } from "../controllers/userController";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { limiter } from "../middleware/limiter";
 
 export const router = Router();
 
@@ -39,4 +40,4 @@ router.delete("/transaction/:id", authMiddleware, transactionController.delete);
 
 // user routes
 router.post("/register", userController.register);
-router.post("/login", userController.login);
+router.post("/login", limiter, userController.login);
