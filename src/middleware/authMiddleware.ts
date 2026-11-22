@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpError } from "../error/HttpError";
+import { HttpError } from "../error/HttpError.js";
 import jwt from "jsonwebtoken";
-import { db } from "../lib/prisma";
+import { db } from "../lib/prisma.js";
 
 if (!process.env.JWT_SECRET) {
     throw new HttpError(500, "Internal server error");

@@ -1,11 +1,11 @@
 import {
     loginRequestType,
     userRequestType,
-} from "../controllers/schema/user.schema";
-import { HttpError } from "../error/HttpError";
-import { db } from "../lib/prisma";
-import { compareHash, hash } from "../utils/hash";
-import { signToken } from "../utils/jsonwebtoken";
+} from "../controllers/schema/user.schema.js";
+import { HttpError } from "../error/HttpError.js";
+import { db } from "../lib/prisma.js";
+import { compareHash, hash } from "../utils/hash.js";
+import { signToken } from "../utils/jsonwebtoken.js";
 
 export class UserService {
     async createUser(userInfo: userRequestType) {

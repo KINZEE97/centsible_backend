@@ -2,12 +2,32 @@ import {
     DateQueryType,
     TransactionType,
     UpdateTransactionType,
-} from "../controllers/schema/transaction.schema";
-import { HttpError } from "../error/HttpError";
-import { TransactionWhereInput } from "../generated/prisma/models";
-import { db } from "../lib/prisma";
-import { getMonthRange } from "../utils/dateRange";
-import { IUser } from "./categoryService";
+} from "../controllers/schema/transaction.schema.js";
+import { HttpError } from "../error/HttpError.js";
+import { TransactionWhereInput } from "../generated/prisma/models.js";
+import { db } from "../lib/prisma.js";
+import { getMonthRange } from "../utils/dateRange.js";
+import { IUser } from "./categoryService.js";
+
+interface ISummaryCategoryItem {
+    categoryId: string;
+    categoryName: string;
+    type?: "INCOME" | "EXPENSE";
+    total: number;
+}
+
+interface IGroupedTransactionItem {
+    categoryId: string;
+    _sum: {
+        amount: number | null;
+    };
+}
+
+interface ICategorySummaryItem {
+    id: string;
+    name: string;
+    type: "INCOME" | "EXPENSE";
+}
 
 export class TransactionService {
     async createTransaction(data: TransactionType, user: IUser) {
@@ -144,20 +164,26 @@ export class TransactionService {
             orderBy: { _sum: { amount: "desc" } },
         });
 
-        const categoryIds = grouped.map((item) => item.categoryId);
+        const categoryIds = grouped.map(
+            (item: { categoryId: string }) => item.categoryId,
+        );
         const categories = await db.category.findMany({
             where: { id: { in: categoryIds }, userId: user.id },
         });
 
-        const items = grouped.map((item) => {
-            const category = categories.find((c) => c.id === item.categoryId);
-            return {
-                categoryId: item.categoryId,
-                categoryName: category?.name || "Unknown",
-                type: category?.type,
-                total: item._sum.amount || 0,
-            };
-        });
+        const items: ISummaryCategoryItem[] = grouped.map(
+            (item: IGroupedTransactionItem) => {
+                const category = categories.find(
+                    (c: ICategorySummaryItem) => c.id === item.categoryId,
+                );
+                return {
+                    categoryId: item.categoryId,
+                    categoryName: category?.name || "Unknown",
+                    type: category?.type,
+                    total: item._sum.amount || 0,
+                };
+            },
+        );
 
         const incomeTotal = items
             .filter((i) => i.type === "INCOME")
