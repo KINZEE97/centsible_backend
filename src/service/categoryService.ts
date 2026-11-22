@@ -51,7 +51,10 @@ export class CategoryService {
         const categoryExists = await db.category.findUnique({
             where: { id, userId: user.id },
             include: {
-                transactions: true,
+                transactions: {
+                    where: { userId: user.id },
+                    orderBy: { date: "desc" },
+                },
             },
         });
 
