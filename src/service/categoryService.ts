@@ -75,7 +75,6 @@ export class CategoryService {
             where: { id },
             data: {
                 name: data.name,
-                type: data.type,
             },
         });
 
