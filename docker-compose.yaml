@@ -1,0 +1,60 @@
+services:
+  db:
+    container_name: expense-control-db
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: 
+      - centsible-network
+    ports:
+      - 5433:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 7
+
+
+  migrate:
+    build: 
+      context: .
+      target: builder
+    command: npx prisma migrate deploy --config prisma7.config.ts
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - centsible-network
+
+  centsible-api: 
+    container_name: centsible-api
+    build: .
+    restart: unless-stopped
+    ports:
+      - 3333:3333
+    environment:
+      - PORT=3333
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      - JWT_SECRET=${JWT_SECRET}
+    networks:
+      - centsible-network
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+
+
+volumes:
+  pgdata:
+    name: pgdata
+
+networks:
+  centsible-network:
+    name: centsible-network
