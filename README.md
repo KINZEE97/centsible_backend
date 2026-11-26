@@ -311,6 +311,12 @@ A transaction's type must match the type of its category, and a transaction can 
 
 ---
 
+## Project diagram
+
+[![Architecture diagram of kinzee97/centsible_backend](https://gitdiagram.com/kinzee97/centsible_backend/diagram.png)](https://gitdiagram.com/kinzee97/centsible_backend?utm_source=readme&utm_medium=picture)
+
+---
+
 ## Roadmap
 
 - [X] Rate limiting on the login route
